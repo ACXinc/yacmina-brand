@@ -1,0 +1,12 @@
+body{
+background:#111;
+color:white;
+text-align:center;
+}
+
+.btn{
+padding:10px;
+background:white;
+color:black;
+text-decoration:none;
+}

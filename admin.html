@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Panel</title>
+<link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+
+<script>
+let pass = prompt("Admin Password:");
+if(pass !== "ademsarra"){
+alert("Access Denied");
+window.location.href = "index.html";
+}
+</script>
+
+<h1>Admin Dashboard</h1>
+
+<h2>Add Product</h2>
+
+<input id="title" placeholder="Title">
+<input id="price" placeholder="Price">
+<input id="stock" placeholder="Stock">
+<textarea id="desc" placeholder="Description"></textarea>
+<input id="sizes" placeholder="Sizes (S,M,L,XL)">
+
+<button onclick="addProduct()">Add</button>
+
+<hr>
+
+<h2>Products</h2>
+<div id="adminProducts"></div>
+
+<script src="js/main.js"></script>
+<script src="js/admin.js"></script>
+
+</body>
+</html>
