@@ -1,22 +1,102 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Cart</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Cart — Yacmina Brand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
-<nav>
-<h1>CART</h1>
-<a href="checkout.html" class="btn">Checkout</a>
-</nav>
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="logo">YAC<span>MINA</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="market.html">Shop</a>
+      <a href="cart.html" class="cart-link">Cart <span class="cart-count">0</span></a>
+    </div>
+    <button class="menu-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
 
-<div id="cartItems" class="grid"></div>
+<section class="page-header">
+  <div class="container">
+    <span class="tag">Step 1 of 2</span>
+    <h1>Your Cart</h1>
+  </div>
+</section>
 
-<h2 id="total"></h2>
+<section class="container" id="cartSection"></section>
 
-<script src="js/cart.js"></script>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 Yacmina Brand. All rights reserved.</span>
+      <span>Crafted with precision.</span>
+    </div>
+  </div>
+</footer>
 
+<script src="js/app.js"></script>
+<script>
+function renderCart() {
+  const cart = getCart();
+  const section = document.getElementById('cartSection');
+
+  if (cart.length === 0) {
+    section.innerHTML = `
+      <div class="empty-state fade-in">
+        <h3>Your Cart Is Empty</h3>
+        <p>Looks like you haven't added anything yet.</p>
+        <a href="market.html" class="btn btn-accent">Browse Collection</a>
+      </div>
+    `;
+    return;
+  }
+
+  const itemsHtml = cart.map(item => `
+    <div class="cart-item fade-in">
+      <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}">
+      <div>
+        <div class="cart-item-title">${escapeHtml(item.title)}</div>
+        <div class="cart-item-meta">Size: ${escapeHtml(item.size)} &nbsp;•&nbsp; Qty: ${item.qty}</div>
+        <button class="remove-btn" onclick="handleRemove('${item.id}', '${item.size}')">Remove</button>
+      </div>
+      <div class="cart-item-price">${formatPrice(item.price * item.qty)}</div>
+    </div>
+  `).join('');
+
+  const subtotal = getCartTotal();
+  const total = subtotal + DELIVERY_FEE;
+
+  section.innerHTML = `
+    <div class="cart-layout">
+      <div class="cart-items">${itemsHtml}</div>
+      <div class="summary-box fade-in">
+        <h3>Order Summary</h3>
+        <div class="summary-row"><span>Subtotal</span><span>${formatPrice(subtotal)}</span></div>
+        <div class="summary-row"><span>Delivery Fee</span><span>${formatPrice(DELIVERY_FEE)}</span></div>
+        <div class="summary-row total"><span>Total</span><span>${formatPrice(total)}</span></div>
+        <a href="checkout.html" class="btn btn-accent btn-full" style="margin-top: 28px;">Proceed to Checkout</a>
+        <a href="market.html" class="btn btn-full" style="margin-top: 12px;">Continue Shopping</a>
+      </div>
+    </div>
+  `;
+}
+
+function handleRemove(id, size) {
+  removeFromCart(id, size);
+  renderCart();
+  showToast('Item removed from cart');
+}
+
+document.addEventListener('DOMContentLoaded', renderCart);
+</script>
 </body>
 </html>

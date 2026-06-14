@@ -1,28 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Yacmina Brand</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yacmina Brand — Luxury Minimal Streetwear</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
-<nav>
-<h1>YACMINA</h1>
-<a href="market.html" class="btn">SHOP</a>
-</nav>
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="logo">YAC<span>MINA</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="market.html">Shop</a>
+      <a href="cart.html" class="cart-link">Cart <span class="cart-count">0</span></a>
+    </div>
+    <button class="menu-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
 
-<section class="hero">
-<h2>Minimal Identity</h2>
-<p>Luxury streetwear built on simplicity</p>
-<a href="market.html" class="btn">Enter Store</a>
+<section class="hero fade-in">
+  <span class="hero-tag">New Season — 2026 Collection</span>
+  <h1>Define Your<br>Silhouette</h1>
+  <p>Yacmina Brand is a luxury minimal streetwear label built on clean lines, premium fabrics, and a refined sense of restraint. Less noise. More form.</p>
+  <div class="hero-actions">
+    <a href="market.html" class="btn btn-accent">Shop Now</a>
+    <a href="#about" class="btn">Discover</a>
+  </div>
 </section>
 
-<footer>
-<a href="https://www.instagram.com/ademchebbix/" target="_blank">
-Adem Chebbi © ACX Inc
-</a>
+<section class="section" id="about">
+  <div class="container section-header">
+    <span class="tag">The Brand</span>
+    <h2>Minimal by Design</h2>
+    <p>Every piece is engineered around three principles: precision tailoring, considered materials, and timeless proportions — crafted for those who let the clothing speak quietly.</p>
+  </div>
+
+  <div class="container">
+    <div class="features">
+      <div class="feature">
+        <div class="feature-num">01</div>
+        <h3>Premium Materials</h3>
+        <p>Sourced fabrics with structure, weight, and longevity — built to outlast trends.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-num">02</div>
+        <h3>Considered Fit</h3>
+        <p>Architectural silhouettes designed for movement, layering, and everyday wear.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-num">03</div>
+        <h3>Limited Drops</h3>
+        <p>Small batch releases. Once a size is gone, it's gone — no restocks, no excess.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="banner">
+  <div class="container">
+    <h2>The Collection Awaits</h2>
+    <p>Explore the full Yacmina lineup — essentials, outerwear, and statement pieces.</p>
+    <a href="market.html" class="btn btn-accent">Enter Store</a>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>Yacmina Brand</h4>
+        <p>Luxury minimal streetwear, designed in studio and built for the everyday.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Shop</h4>
+        <a href="market.html">All Products</a>
+        <a href="cart.html">Cart</a>
+        <a href="checkout.html">Checkout</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="#about">About</a>
+        <a href="admin.html">Admin</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>contact@yacmina.com</p>
+        <p>Tunis, Tunisia</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Yacmina Brand. All rights reserved.</span>
+      <span>Crafted with precision.</span>
+    </div>
+  </div>
 </footer>
 
+<script src="js/app.js"></script>
 </body>
 </html>

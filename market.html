@@ -1,21 +1,159 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Store</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop — Yacmina Brand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
-<nav>
-<h1>STORE</h1>
-<a href="cart.html" class="btn">Cart</a>
-</nav>
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="logo">YAC<span>MINA</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="market.html">Shop</a>
+      <a href="cart.html" class="cart-link">Cart <span class="cart-count">0</span></a>
+    </div>
+    <button class="menu-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
 
-<section class="grid" id="products"></section>
+<section class="page-header">
+  <div class="container">
+    <span class="tag">Full Collection</span>
+    <h1>Shop All</h1>
+  </div>
+</section>
 
-<script src="js/main.js"></script>
-<script src="js/market.js"></script>
+<section class="container">
+  <div class="market-toolbar">
+    <span class="count" id="productCount">Loading products...</span>
+    <input type="text" class="search-input" id="searchInput" placeholder="Search products...">
+  </div>
 
+  <div class="product-grid" id="productGrid"></div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>Yacmina Brand</h4>
+        <p>Luxury minimal streetwear, designed in studio and built for the everyday.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Shop</h4>
+        <a href="market.html">All Products</a>
+        <a href="cart.html">Cart</a>
+        <a href="checkout.html">Checkout</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="index.html#about">About</a>
+        <a href="admin.html">Admin</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>contact@yacmina.com</p>
+        <p>Tunis, Tunisia</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Yacmina Brand. All rights reserved.</span>
+      <span>Crafted with precision.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+let allProducts = [];
+let selectedSizes = {}; // productId -> size
+
+function renderProducts(products) {
+  const grid = document.getElementById('productGrid');
+  const countEl = document.getElementById('productCount');
+
+  if (products.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><h3>No Products Found</h3><p>Try a different search term.</p></div>`;
+    countEl.textContent = '0 products';
+    return;
+  }
+
+  countEl.textContent = products.length + (products.length === 1 ? ' product' : ' products');
+
+  grid.innerHTML = products.map(p => {
+    const isOut = p.stock <= 0;
+    const sizes = p.sizes && p.sizes.length ? p.sizes : ['S','M','L','XL'];
+    const defaultSize = selectedSizes[p.id] || sizes[0];
+
+    const sizeButtons = sizes.map(s => `
+      <button class="size-option ${s === defaultSize ? 'active' : ''}"
+              data-product="${p.id}" data-size="${s}"
+              ${isOut ? 'disabled' : ''}
+              onclick="selectSize('${p.id}', '${s}', this)">${s}</button>
+    `).join('');
+
+    return `
+      <div class="product-card fade-in">
+        <div class="product-img">
+          <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)}" loading="lazy">
+          <span class="stock-badge ${isOut ? 'out' : ''}">${isOut ? 'Out of Stock' : 'In Stock: ' + p.stock}</span>
+        </div>
+        <div class="product-info">
+          <div class="product-title">${escapeHtml(p.title)}</div>
+          <div class="product-desc">${escapeHtml(p.description)}</div>
+          <div class="product-price">${formatPrice(p.price)}</div>
+          <div class="size-selector">${sizeButtons}</div>
+          <button class="btn ${isOut ? '' : 'btn-accent'} btn-full"
+                  ${isOut ? 'disabled' : ''}
+                  onclick="handleAddToCart('${p.id}')">
+            ${isOut ? 'Unavailable' : 'Add to Cart'}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectSize(productId, size, btn) {
+  selectedSizes[productId] = size;
+  const siblings = btn.parentElement.querySelectorAll('.size-option');
+  siblings.forEach(s => s.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function handleAddToCart(productId) {
+  const product = allProducts.find(p => p.id === productId);
+  if (!product) return;
+  const sizes = product.sizes && product.sizes.length ? product.sizes : ['S','M','L','XL'];
+  const size = selectedSizes[productId] || sizes[0];
+  addToCart(productId, size);
+  showToast(`Added ${product.title} (${size}) to cart`);
+}
+
+function init() {
+  allProducts = getProducts();
+  renderProducts(allProducts);
+
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase().trim();
+    const filtered = allProducts.filter(p =>
+      p.title.toLowerCase().includes(term) ||
+      p.description.toLowerCase().includes(term)
+    );
+    renderProducts(filtered);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
 </body>
 </html>

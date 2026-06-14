@@ -1,17 +1,265 @@
-<nav>
-<h1>ADMIN DASHBOARD</h1>
-</nav>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Yacmina Brand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
-<div class="admin">
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="logo">YAC<span>MINA</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="market.html">Shop</a>
+      <a href="orders.html">Orders</a>
+      <a href="#" id="logoutLink" style="display:none;">Logout</a>
+    </div>
+    <button class="menu-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
 
-<div class="panel">
-<h2>Add Product</h2>
-<input id="title">
-<input id="price">
-<textarea id="desc"></textarea>
-<button class="btn" onclick="addProduct()">Add</button>
+<!-- LOGIN VIEW -->
+<div id="loginView">
+  <div class="login-box fade-in">
+    <h1>Admin Access</h1>
+    <form id="loginForm">
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required placeholder="Enter admin password">
+      </div>
+      <button type="submit" class="btn btn-accent btn-full">Login</button>
+      <p class="error-msg" id="errorMsg">Incorrect password. Please try again.</p>
+    </form>
+  </div>
 </div>
 
-<div id="adminProducts"></div>
+<!-- ADMIN DASHBOARD -->
+<div id="adminView" style="display:none;">
+  <section class="page-header">
+    <div class="container">
+      <span class="tag">Dashboard</span>
+      <h1>Manage Store</h1>
+    </div>
+  </section>
 
+  <section class="container admin-layout">
+    <div class="admin-grid">
+      <div class="admin-form fade-in">
+        <h3 id="formTitle">Add New Product</h3>
+        <form id="productForm">
+          <input type="hidden" id="productId" value="">
+          <div class="field">
+            <label for="title">Title</label>
+            <input type="text" id="title" required placeholder="Essential Oversized Tee">
+          </div>
+          <div class="field">
+            <label for="price">Price (DT)</label>
+            <input type="number" id="price" required min="0" step="0.01" placeholder="89">
+          </div>
+          <div class="field">
+            <label for="description">Description</label>
+            <textarea id="description" required placeholder="Short product description..."></textarea>
+          </div>
+          <div class="field">
+            <label for="image">Image URL</label>
+            <input type="text" id="image" required placeholder="assets/images/product.jpg or https://...">
+          </div>
+          <div class="field">
+            <label for="stock">Stock Quantity</label>
+            <input type="number" id="stock" required min="0" placeholder="20">
+          </div>
+          <div class="field">
+            <label>Available Sizes</label>
+            <div class="checkbox-group" id="sizeGroup">
+              <label class="checkbox-pill"><input type="checkbox" value="S" checked> S</label>
+              <label class="checkbox-pill"><input type="checkbox" value="M" checked> M</label>
+              <label class="checkbox-pill"><input type="checkbox" value="L" checked> L</label>
+              <label class="checkbox-pill"><input type="checkbox" value="XL" checked> XL</label>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-accent btn-full" id="submitBtn">Add Product</button>
+          <button type="button" class="btn btn-full" id="cancelEditBtn" style="display:none; margin-top:12px;">Cancel Edit</button>
+        </form>
+      </div>
+
+      <div class="fade-in">
+        <h3 style="font-size:13px; letter-spacing:3px; text-transform:uppercase; font-weight:700; margin-bottom:24px; color: var(--accent);">All Products</h3>
+        <div class="admin-product-list" id="productList"></div>
+      </div>
+    </div>
+  </section>
 </div>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 Yacmina Brand. All rights reserved.</span>
+      <span>Admin Panel</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+const ADMIN_PASSWORD = 'ademsarra';
+
+function checkAuth() {
+  return sessionStorage.getItem(STORAGE_KEYS.ADMIN_AUTH) === 'true';
+}
+
+function showAdmin() {
+  document.getElementById('loginView').style.display = 'none';
+  document.getElementById('adminView').style.display = 'block';
+  document.getElementById('logoutLink').style.display = 'block';
+  renderProductList();
+}
+
+function showLogin() {
+  document.getElementById('loginView').style.display = 'block';
+  document.getElementById('adminView').style.display = 'none';
+  document.getElementById('logoutLink').style.display = 'none';
+}
+
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const pass = document.getElementById('password').value;
+  if (pass === ADMIN_PASSWORD) {
+    sessionStorage.setItem(STORAGE_KEYS.ADMIN_AUTH, 'true');
+    showAdmin();
+  } else {
+    document.getElementById('errorMsg').style.display = 'block';
+  }
+});
+
+document.getElementById('logoutLink').addEventListener('click', (e) => {
+  e.preventDefault();
+  sessionStorage.removeItem(STORAGE_KEYS.ADMIN_AUTH);
+  showLogin();
+});
+
+function renderProductList() {
+  const products = getProducts();
+  const list = document.getElementById('productList');
+
+  if (products.length === 0) {
+    list.innerHTML = `<p style="color: var(--muted);">No products yet.</p>`;
+    return;
+  }
+
+  list.innerHTML = products.map(p => `
+    <div class="admin-product-row">
+      <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)}" onerror="this.style.opacity=0.3">
+      <div class="info">
+        <h4>${escapeHtml(p.title)}</h4>
+        <p>Stock: ${p.stock} • Sizes: ${(p.sizes||[]).join(', ')}</p>
+      </div>
+      <div class="price">${formatPrice(p.price)}</div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-small" onclick="editProduct('${p.id}')">Edit</button>
+        <button class="btn btn-small btn-danger" onclick="deleteProduct('${p.id}')">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function editProduct(id) {
+  const products = getProducts();
+  const product = products.find(p => p.id === id);
+  if (!product) return;
+
+  document.getElementById('productId').value = product.id;
+  document.getElementById('title').value = product.title;
+  document.getElementById('price').value = product.price;
+  document.getElementById('description').value = product.description;
+  document.getElementById('image').value = product.image;
+  document.getElementById('stock').value = product.stock;
+
+  const checkboxes = document.querySelectorAll('#sizeGroup input[type="checkbox"]');
+  checkboxes.forEach(cb => {
+    cb.checked = (product.sizes || []).includes(cb.value);
+  });
+
+  document.getElementById('formTitle').textContent = 'Edit Product';
+  document.getElementById('submitBtn').textContent = 'Save Changes';
+  document.getElementById('cancelEditBtn').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetForm() {
+  document.getElementById('productForm').reset();
+  document.getElementById('productId').value = '';
+  document.getElementById('formTitle').textContent = 'Add New Product';
+  document.getElementById('submitBtn').textContent = 'Add Product';
+  document.getElementById('cancelEditBtn').style.display = 'none';
+  const checkboxes = document.querySelectorAll('#sizeGroup input[type="checkbox"]');
+  checkboxes.forEach(cb => cb.checked = true);
+}
+
+document.getElementById('cancelEditBtn').addEventListener('click', resetForm);
+
+function deleteProduct(id) {
+  if (!confirm('Delete this product?')) return;
+  let products = getProducts();
+  products = products.filter(p => p.id !== id);
+  saveProducts(products);
+  renderProductList();
+  showToast('Product deleted');
+}
+
+document.getElementById('productForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const id = document.getElementById('productId').value;
+  const sizes = Array.from(document.querySelectorAll('#sizeGroup input[type="checkbox"]:checked')).map(cb => cb.value);
+
+  if (sizes.length === 0) {
+    showToast('Please select at least one size');
+    return;
+  }
+
+  const productData = {
+    title: document.getElementById('title').value.trim(),
+    price: parseFloat(document.getElementById('price').value),
+    description: document.getElementById('description').value.trim(),
+    image: document.getElementById('image').value.trim(),
+    stock: parseInt(document.getElementById('stock').value, 10),
+    sizes: sizes
+  };
+
+  let products = getProducts();
+
+  if (id) {
+    const index = products.findIndex(p => p.id === id);
+    if (index !== -1) {
+      products[index] = { ...products[index], ...productData };
+    }
+    showToast('Product updated');
+  } else {
+    productData.id = 'p' + Date.now();
+    products.push(productData);
+    showToast('Product added');
+  }
+
+  saveProducts(products);
+  resetForm();
+  renderProductList();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (checkAuth()) {
+    showAdmin();
+  } else {
+    showLogin();
+  }
+});
+</script>
+</body>
+</html>

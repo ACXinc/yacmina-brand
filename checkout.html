@@ -1,27 +1,194 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Checkout</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — Yacmina Brand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
-<nav>
-<h1>CHECKOUT</h1>
-</nav>
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="logo">YAC<span>MINA</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="market.html">Shop</a>
+      <a href="cart.html" class="cart-link">Cart <span class="cart-count">0</span></a>
+    </div>
+    <button class="menu-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
 
-<div class="form">
-<input id="name" placeholder="Name">
-<input id="lastname" placeholder="Last Name">
-<input id="email" placeholder="Email">
-<input id="phone" placeholder="Phone">
-<input id="address" placeholder="Address">
+<section class="page-header">
+  <div class="container">
+    <span class="tag">Step 2 of 2</span>
+    <h1>Checkout</h1>
+  </div>
+</section>
 
-<button class="btn" onclick="placeOrder()">CONFIRM ORDER</button>
-</div>
+<section class="container" id="checkoutSection"></section>
 
-<script src="js/checkout.js"></script>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 Yacmina Brand. All rights reserved.</span>
+      <span>Crafted with precision.</span>
+    </div>
+  </div>
+</footer>
 
+<script src="js/app.js"></script>
+<script>
+function renderCheckout() {
+  const cart = getCart();
+  const section = document.getElementById('checkoutSection');
+
+  if (cart.length === 0) {
+    section.innerHTML = `
+      <div class="empty-state fade-in">
+        <h3>Your Cart Is Empty</h3>
+        <p>Add items to your cart before checking out.</p>
+        <a href="market.html" class="btn btn-accent">Browse Collection</a>
+      </div>
+    `;
+    return;
+  }
+
+  const subtotal = getCartTotal();
+  const total = subtotal + DELIVERY_FEE;
+
+  const reviewItems = cart.map(item => `
+    <div class="review-item">
+      <div>
+        <div class="name">${escapeHtml(item.title)}</div>
+        <div class="meta">Size: ${escapeHtml(item.size)} • Qty: ${item.qty}</div>
+      </div>
+      <div>${formatPrice(item.price * item.qty)}</div>
+    </div>
+  `).join('');
+
+  section.innerHTML = `
+    <div class="checkout-layout">
+      <form id="checkoutForm" class="fade-in">
+        <div class="form-grid checkout-form">
+          <div class="field">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" name="firstName" required placeholder="Amine">
+          </div>
+          <div class="field">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" name="lastName" required placeholder="Sarra">
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required placeholder="you@example.com">
+          </div>
+          <div class="field">
+            <label for="phone">Phone Number (Tunisia)</label>
+            <input type="tel" id="phone" name="phone" required placeholder="+216 XX XXX XXX" pattern="^(\+216)?\s?[2-9][0-9]{7}$">
+          </div>
+          <div class="field">
+            <label for="location">City / Location</label>
+            <input type="text" id="location" name="location" required placeholder="Tunis">
+          </div>
+          <div class="field full">
+            <label for="address">Full Address</label>
+            <textarea id="address" name="address" required placeholder="Street, building, apartment number..."></textarea>
+          </div>
+          <div class="field full">
+            <button type="submit" class="btn btn-accent btn-full">Confirm Order</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="order-review fade-in">
+        <h3>Order Review</h3>
+        ${reviewItems}
+        <div class="summary-row"><span>Subtotal</span><span>${formatPrice(subtotal)}</span></div>
+        <div class="summary-row"><span>Delivery Fee</span><span>${formatPrice(DELIVERY_FEE)}</span></div>
+        <div class="summary-row total"><span>Total</span><span>${formatPrice(total)}</span></div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('checkoutForm').addEventListener('submit', handleSubmit);
+}
+
+function handleSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+
+  const phone = form.phone.value.trim();
+  const phonePattern = /^(\+216)?\s?[2-9][0-9]{7}$/;
+  if (!phonePattern.test(phone)) {
+    showToast('Please enter a valid Tunisian phone number');
+    form.phone.focus();
+    return;
+  }
+
+  const cart = getCart();
+  if (cart.length === 0) {
+    showToast('Your cart is empty');
+    return;
+  }
+
+  const subtotal = getCartTotal();
+  const total = subtotal + DELIVERY_FEE;
+
+  const order = {
+    id: 'ORD-' + Date.now(),
+    date: new Date().toISOString(),
+    customer: {
+      firstName: form.firstName.value.trim(),
+      lastName: form.lastName.value.trim(),
+      email: form.email.value.trim(),
+      phone: phone,
+      location: form.location.value.trim(),
+      address: form.address.value.trim()
+    },
+    items: cart.map(item => ({
+      id: item.id,
+      title: item.title,
+      price: item.price,
+      size: item.size,
+      qty: item.qty,
+      image: item.image
+    })),
+    deliveryFee: DELIVERY_FEE,
+    subtotal: subtotal,
+    total: total
+  };
+
+  const orders = getOrders();
+  orders.push(order);
+  saveOrders(orders);
+
+  // decrement stock
+  const products = getProducts();
+  cart.forEach(item => {
+    const product = products.find(p => p.id === item.id);
+    if (product) {
+      product.stock = Math.max(0, product.stock - item.qty);
+    }
+  });
+  saveProducts(products);
+
+  // clear cart
+  saveCart([]);
+
+  showToast('Order placed successfully!');
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 1200);
+}
+
+document.addEventListener('DOMContentLoaded', renderCheckout);
+</script>
 </body>
 </html>
