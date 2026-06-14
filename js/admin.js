@@ -1,15 +1,18 @@
 function addProduct(){
 
-let p = {
+let p={
+id:Date.now(),
 title:document.getElementById("title").value,
-price:document.getElementById("price").value,
-stock:document.getElementById("stock").value,
+price:Number(document.getElementById("price").value),
 desc:document.getElementById("desc").value,
-sizes:document.getElementById("sizes").value
+image:"assets/images/default.jpg",
+stock:10,
+sizes:["S","M","L"]
 };
 
 products.push(p);
-localStorage.setItem("products", JSON.stringify(products));
+
+localStorage.setItem("products",JSON.stringify(products));
 
 alert("Product Added");
 location.reload();
