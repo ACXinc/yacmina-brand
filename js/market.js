@@ -1,22 +1,21 @@
-let container = document.getElementById("products");
+let container=document.getElementById("products");
 
 function render(){
-
-container.innerHTML = "";
+container.innerHTML="";
 
 products.forEach((p,i)=>{
 
-let div = document.createElement("div");
-div.className = "card";
+let card=document.createElement("div");
+card.className="card";
 
-div.innerHTML = `
+card.innerHTML=`
 <h3>${p.title}</h3>
 <p>${p.desc}</p>
-<p><b>${p.price} DT</b> + 7 DT delivery</p>
-<button class="btn" onclick="addToCart(${i})">Add to Cart</button>
+<p>${p.price} DT + 7 DT delivery</p>
+<button class="btn" onclick="addToCart(${i})">Add</button>
 `;
 
-container.appendChild(div);
+container.appendChild(card);
 });
 
 }
@@ -25,6 +24,6 @@ render();
 
 function addToCart(i){
 cart.push(products[i]);
-localStorage.setItem("cart", JSON.stringify(cart));
-alert("Added to cart");
+localStorage.setItem("cart",JSON.stringify(cart));
+alert("Added");
 }

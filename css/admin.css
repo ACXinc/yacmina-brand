@@ -15,3 +15,13 @@ background:#1a1a1a;
 color:white;
 border:none;
 }
+.admin{
+padding:40px;
+}
+
+.panel{
+background:#141414;
+padding:20px;
+margin:10px;
+border:1px solid #222;
+}
