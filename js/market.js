@@ -1,18 +1,27 @@
 let container = document.getElementById("products");
 
+function render(){
+
+container.innerHTML = "";
+
 products.forEach((p,i)=>{
+
 let div = document.createElement("div");
-div.className = "product";
+div.className = "card";
 
 div.innerHTML = `
 <h3>${p.title}</h3>
 <p>${p.desc}</p>
-<p>${p.price} DT + 7 DT delivery</p>
-<button onclick="addToCart(${i})">Add</button>
+<p><b>${p.price} DT</b> + 7 DT delivery</p>
+<button class="btn" onclick="addToCart(${i})">Add to Cart</button>
 `;
 
 container.appendChild(div);
 });
+
+}
+
+render();
 
 function addToCart(i){
 cart.push(products[i]);

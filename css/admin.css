@@ -1,12 +1,17 @@
 body{
-background:#0a0a0a;
+background:#0b0b0b;
 color:white;
-text-align:center;
+font-family:Inter;
+}
+
+.dashboard{
+padding:40px;
 }
 
 input,textarea{
-display:block;
-margin:10px auto;
 padding:10px;
-width:200px;
+margin:5px;
+background:#1a1a1a;
+color:white;
+border:none;
 }

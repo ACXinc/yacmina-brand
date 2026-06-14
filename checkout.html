@@ -2,23 +2,25 @@
 <html>
 <head>
 <title>Checkout</title>
-<link rel="stylesheet" href="css/checkout.css">
+<link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
+<header>
 <h1>Checkout</h1>
+</header>
 
+<div class="form">
 <input id="name" placeholder="Name">
 <input id="lastname" placeholder="Last Name">
 <input id="email" placeholder="Email">
-<input id="phone" placeholder="Tunisian Phone">
+<input id="phone" placeholder="Phone (TN)">
 <input id="location" placeholder="Location">
 <input id="address" placeholder="Address">
 
-<button onclick="placeOrder()">Confirm Order</button>
-
-<p>Delivery Fee: 7 DT</p>
+<button class="btn" onclick="placeOrder()">Confirm Order</button>
+</div>
 
 <script src="js/checkout.js"></script>
 
